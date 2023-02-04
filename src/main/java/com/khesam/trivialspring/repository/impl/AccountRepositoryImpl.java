@@ -1,6 +1,7 @@
 package com.khesam.trivialspring.repository.impl;
 
 import com.khesam.trivialspring.common.AccountNotFoundException;
+import com.khesam.trivialspring.common.Config;
 import com.khesam.trivialspring.repository.AccountJpaRepository;
 import com.khesam.trivialspring.repository.entity.AccountsEntity;
 import com.khesam.trivialspring.repository.mapper.AccountDataAccessMapper;
@@ -17,11 +18,17 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     private final AccountJpaRepository accountJpaRepository;
     private final AccountDataAccessMapper accountDataAccessMapper;
+    private final Config config;
 
     @Autowired
-    public AccountRepositoryImpl(AccountJpaRepository accountJpaRepository, AccountDataAccessMapper accountDataAccessMapper) {
+    public AccountRepositoryImpl(
+            AccountJpaRepository accountJpaRepository,
+            AccountDataAccessMapper accountDataAccessMapper,
+            Config config
+    ) {
         this.accountJpaRepository = accountJpaRepository;
         this.accountDataAccessMapper = accountDataAccessMapper;
+        this.config = config;
     }
 
     public Account getAccount(String accountId) {
@@ -38,7 +45,7 @@ public class AccountRepositoryImpl implements AccountRepository {
         entity.setId(UUID.randomUUID().toString());
         entity.setCustomerId(customerId);
         entity.setBalance(balance);
-        entity.setAccountStatus("open");
+        entity.setAccountStatus(config.getBaseStatus());
 
         accountJpaRepository.save(entity);
         return UUID.fromString(entity.getId());
